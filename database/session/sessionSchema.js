@@ -1,16 +1,12 @@
-import { mongoose } from "mongoose";
+import mongoose from "mongoose";
 
-const schema = new mongoose.Schema(
+const sessionSchema = new mongoose.Schema(
   {
     token: {
       type: String,
       required: true,
     },
-    associate: {
-      type: String,
-      default: "",
-    },
-    type: {
+    userEmail: {
       type: String,
       default: "",
     },
@@ -20,4 +16,5 @@ const schema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Session", schema);
+// Sessions
+export default mongoose.model("Session", sessionSchema);

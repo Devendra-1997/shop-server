@@ -1,21 +1,15 @@
 import sessionSchema from "./sessionSchema.js";
-
-// create new Token
-export const insertSession = (obj) => {
-  return sessionSchema(obj).save();
-};
-
-// find Token
-export const findSession = (filter) => {
+//read @filter must be an object
+export const getSession = (filter) => {
   return sessionSchema.findOne(filter);
 };
 
-// delete a Token
-export const deleteSession = (filter) => {
-  return sessionSchema.findOneAndDelete(filter);
+//Create
+export const createSession = (sessionObj) => {
+  return sessionSchema(sessionObj).save();
 };
 
-// delete many Tokens
-export const deleteManySession = (filter) => {
-  return sessionSchema.deleteMany(filter);
+//delete
+export const deleteSession = (filter) => {
+  return sessionSchema.findOneAndDelete(filter);
 };

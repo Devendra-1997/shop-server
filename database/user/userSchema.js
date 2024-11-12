@@ -16,7 +16,6 @@ const schema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-      maxLength: [100, "First Name Character Length exceeded..."],
       required: true,
     },
     lastName: {

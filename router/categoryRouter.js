@@ -1,14 +1,14 @@
 import express from "express";
 import { getMaterials } from "../database/sub-category/materialModel.js";
 import { getBrands } from "../database/sub-category/brandModel.js";
-import { getCategorie } from "../database/category/categoryModel.js";
+import { getCategories } from "../database/category/categoryModel.js";
 
 const categoryRouter = express.Router();
 
 //get all active categories
 categoryRouter.get("/", async (req, res, next) => {
   try {
-    const categories = await getCategorie({ status: "active" });
+    const categories = await getCategories({ status: "active" });
     res.json({
       status: "success",
       message: "",

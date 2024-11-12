@@ -1,18 +1,26 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import { mongoConnect } from "./config/dbConfig.js";
-import userRouter from "./router/userRouter.js";
+import { connectToMongoDb } from "./config/dbConfig.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 // middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 app.use(express.json());
 
 // connect to database
-mongoConnect();
+connectToMongoDb();
+
+// Serve Images or Public Assets
+import path from "path";
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "/public")));
 
 // server route
 app.get("/", (req, res, next) => {
@@ -21,29 +29,25 @@ app.get("/", (req, res, next) => {
   });
 });
 
-// 404 error handler
-app.use((req, res, next) => {
-  next({
-    status: 404,
-    message: "404 Path Not found",
-  });
-});
+// // 404 error handler
+// app.use((req, res, next) => {
+//   next({
+//     status: 404,
+//     message: "404 Path Not found",
+//   });
+// });
 
-// global error handler
-app.use((error, req, res, next) => {
-  console.log(error);
-  res.status(error.status || 500).json({
-    message: error.message,
-  });
-});
+// // global error handler
+// app.use((error, req, res, next) => {
+//   console.log(error);
+//   res.status(error.status || 500).json({
+//     message: error.message,
+//   });
+// });
 
-// Routers
-
+// Routes for Client Side
+import userRouter from "./router/userRouter.js";
 app.use("/api/user", userRouter);
-// app.use("/api/burrow", burrowRouter);
-// app.use("/api/review", reviewRouter);
-// app.use("/api/book", bookRouter);
-// app.use("/api/user/profile", profileRouter);
 
 // start our server
 app.listen(PORT, (error) => {

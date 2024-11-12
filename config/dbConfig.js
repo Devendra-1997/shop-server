@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
 
-export const mongoConnect = () => {
+export const connectToMongoDb = () => {
   try {
-    mongoose.connect(process.env.MONGO_URI) && console.log("DB Connected");
+    const connect = mongoose.connect(
+      process.env.DB_CONNECT_URL + "/shophub-database"
+    );
+    if (connect) {
+      console.log(
+        `Database conected: ${process.env.DB_CONNECT_URL}/shophub-database`
+      );
+    }
   } catch (error) {
-    console.log(error);
+    console.log("Error:", error);
   }
 };
