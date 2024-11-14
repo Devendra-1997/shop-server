@@ -1,49 +1,64 @@
-import jwt from "jsonwebtoken";
-import { createSession } from "../database/session/sessionModel.js";
+import JWT from "jsonwebtoken";
+import { insertSession } from "../database/session/sessionModel.js";
+import { updateUser } from "../database/user/userModel.js";
 
-// replace secret keys with JWT_ACCESS_SECRET for access JWT
-// replace secret keys with JWT_REFRESH_SECRET for access JWT
-
-// node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-// access jwt: session table, exp:15min
-export const generateAccessJWT = async (email) => {
-  const token = jwt.sign({ email }, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
-  });
-
-  await createSession({ token, userEmail: email });
-
-  return token;
-};
-
-//refresh jwt: user table, exp: 30day
-export const generateRefreshJWT = async (email) => {
+// sign access JWT
+export const signAccessJWT = async (email) => {
   try {
-    const token = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: "30d",
+    const token = JWT.sign({ email }, process.env.SK_ACCESS, {
+      expiresIn: "20m",
     });
+    await insertSession({ token, associate: email });
 
     return token;
   } catch (error) {
-    console.log(error);
+    console.error("Error inserting session:", error);
   }
 };
 
-// generate tokens
-export const generateJWTs = async (email) => {
-  return {
-    accessJWT: await generateAccessJWT(email),
-    refreshJWT: await generateRefreshJWT(email),
-  };
+// verify access JWT
+export const verifyAccessJWT = (token) => {
+  try {
+    return JWT.verify(token, process.env.SK_ACCESS);
+  } catch (error) {
+    if (error.message.includes("jwt expired")) {
+      return "jwt expired";
+    }
+    return "Invalid Token";
+  }
 };
 
-// verify access token and return decoded email
-export const verifyAccessJWT = (accessJWT) => {
-  return jwt.verify(accessJWT, process.env.JWT_ACCESS_SECRET);
+// sign refresh JWT
+export const signRefreshJWT = async (email) => {
+  try {
+    const refreshJWT = JWT.sign({ email }, process.env.SK_REFRESH, {
+      expiresIn: "30d",
+    });
+
+    updateUser({ email }, { refreshJWT });
+    return refreshJWT;
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
 };
 
-// verify refresh token and return decoded email
-export const verifyRefreshJWT = (refreshJWT) => {
-  return jwt.verify(refreshJWT, process.env.JWT_REFRESH_SECRET);
+// verify refresh JWT
+export const verifyRefreshJWT = (token) => {
+  try {
+    return JWT.verify(token, process.env.SK_REFRESH);
+  } catch (error) {
+    if (error.message.includes("jwt expired")) {
+      return "jwt expired";
+    }
+    return "Invalid Token";
+  }
+};
+
+// sign tokens
+export const signTokens = async (email) => {
+  const tokenPromises = new Promise(signAccessJWT);
+  const accessJWT = await signAccessJWT(email);
+  const refreshJWT = await signRefreshJWT(email);
+
+  return { accessJWT, refreshJWT };
 };

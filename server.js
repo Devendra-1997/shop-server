@@ -2,25 +2,35 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectToMongoDb } from "./config/dbConfig.js";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 // middlewares
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  })
-);
+app.use(cors());
+app.use(morgan("dev"));
 app.use(express.json());
+app.use("/api/orders", orderRouter);
 
-// connect to database
+// connect to database();
 connectToMongoDb();
 
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Serve Images or Public Assets
-import path from "path";
-const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "/public")));
+
+// routes
+import { routes } from "./router/routers.js";
+import orderRouter from "./router/orderRouter.js";
+routes.map(({ path, middlewares }) => {
+  return app.use(path, middlewares);
+});
 
 // server route
 app.get("/", (req, res, next) => {
@@ -29,27 +39,25 @@ app.get("/", (req, res, next) => {
   });
 });
 
-// // 404 error handler
-// app.use((req, res, next) => {
-//   next({
-//     status: 404,
-//     message: "404 Path Not found",
-//   });
-// });
+// 404 error handler
+app.use((req, res, next) => {
+  next({
+    status: 404,
+    message: "404 Path Not found",
+  });
+});
 
-// // global error handler
-// app.use((error, req, res, next) => {
-//   console.log(error);
-//   res.status(error.status || 500).json({
-//     message: error.message,
-//   });
-// });
-
-// Routes for Client Side
-import userRouter from "./router/userRouter.js";
-app.use("/api/user", userRouter);
+// global error handler
+app.use((error, req, res, next) => {
+  console.log(error);
+  res.status(error.status || 500).json({
+    message: error.message,
+  });
+});
 
 // start our server
-app.listen(PORT, (error) => {
-  error ? console.log("Error", error) : console.log("Server is running");
-});
+app.listen(PORT, (error) =>
+  error
+    ? console.log("Error", error)
+    : console.log(`Server running at port: ${PORT}`)
+);

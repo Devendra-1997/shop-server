@@ -1,173 +1,103 @@
-// import { getSession } from "../database/session/sessionModel.js";
-// import { getUser } from "../database/user/userModel.js";
-// import { verifyAccessJWT, verifyRefreshJWT } from "../utility/jwtHelper.js";
+import { findSession } from "../database/session/sessionModel.js";
+import { getUser } from "../database/user/userModel.js";
+import { verifyAccessJWT, verifyRefreshJWT } from "../utility/jwtHelper.js";
 
-// // authenticate user using access jwt
-// export const auth = async (req, res, next) => {
-//   try {
-//     const { authorization } = req.headers;
-//     if (!authorization) {
-//       return next({
-//         status: 401,
-//         message: "Authorization header is missing",
-//       });
-//     }
-//     // verfy access jwt
-//     const decoded = verifyAccessJWT(authorization);
-
-//     // Check if the token verification failed and returned an error message
-//     if (typeof decoded === "string" || !decoded?.email) {
-//       return next({
-//         status: 401,
-//         message: decoded, // "jwt expired" or "Invalid Token"
-//       });
-//     }
-
-//     if (decoded?.email) {
-//       // get token
-//       const tokenObj = await getSession({ token: authorization });
-
-//       if (tokenObj?._id) {
-//         // get user
-//         const user = await getUser({ email: decoded.email });
-//         if (user?._id) {
-//           if (!user.isEmailVerified) {
-//             return res.json({
-//               status: "error",
-//               message: " Account Not Verified. Check email to Verify Now.",
-//             });
-//           }
-
-//           user.__v = undefined;
-//           user.refreshJWT = undefined;
-
-//           req.userInfo = user;
-//           return next();
-//         }
-//       }
-//     }
-
-//     // if error
-//     res.status(401).json({
-//       status: "error",
-//       message: "Unauthorized access.",
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// // authenticate user using refresh jwt
-// export const jwtAuth = async (req, res, next) => {
-//   try {
-//     const { authorization } = req.headers;
-//     let errorMessage = "";
-
-//     // verfy access jwt
-//     const decoded = verifyRefreshJWT(authorization);
-
-//     if (typeof decoded === "string") {
-//       return next({
-//         status: 401,
-//         message: decoded, // "jwt expired" or "Invalid Token"
-//       });
-//     }
-
-//     if (decoded?.email) {
-//       // get user
-//       const user = await getUser({ email: decoded.email });
-
-//       if (user?._id) {
-//         if (!user.isEmailVerified) {
-//           return (errorMessage = "Account Not Verified.");
-//         }
-
-//         user.__v = undefined;
-//         user.refreshJWT = undefined;
-
-//         req.userInfo = user;
-//         return next();
-//       }
-//     }
-
-//     // if error
-//     res.json({
-//       status: 401,
-//       message: errorMessage
-//         ? errorMessage
-//         : "Invalid Token or unauthorized access.",
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-import { getSession } from "../database/session/sessionModel.js";
-import { findUserByEmail } from "../database/user/userModel.js";
-import {
-  generateAccessJWT,
-  verifyAccessJWT,
-  verifyRefreshJWT,
-} from "../utility/jwtHelper.js";
-import {
-  buildErrorResponse,
-  buildSuccessResponse,
-} from "../utility/responseHelper.js";
-
-// Client authentication
-export const clientAuth = async (req, res, next) => {
+// authenticate user using access jwt
+export const auth = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
-
-    // Validate if accessJWT is valid
+    if (!authorization) {
+      return next({
+        status: 401,
+        message: "Authorization header is missing",
+      });
+    }
+    // verfy access jwt
     const decoded = verifyAccessJWT(authorization);
 
-    if (decoded?.email) {
-      const sessionToken = await getSession({
-        token: authorization,
-        userEmail: decoded.email,
+    // Check if the token verification failed and returned an error message
+    if (typeof decoded === "string" || !decoded?.email) {
+      return next({
+        status: 401,
+        message: decoded, // "jwt expired" or "Invalid Token"
       });
+    }
 
-      if (sessionToken?._id) {
-        const user = await findUserByEmail(decoded.email); // Client-specific user lookup
+    if (decoded?.email) {
+      // get token
+      const tokenObj = await findSession({ token: authorization });
 
-        if (user?._id && user?.isVerified) {
-          user.password = undefined; // Remove sensitive information
+      if (tokenObj?._id) {
+        // get user
+        const user = await getUser({ email: decoded.email });
+        if (user?._id) {
+          if (!user.isEmailVerified) {
+            return res.json({
+              status: "error",
+              message: " Account Not Verified. Check email to Verify Now.",
+            });
+          }
+
+          user.__v = undefined;
+          user.refreshJWT = undefined;
+
           req.userInfo = user;
-
           return next();
         }
       }
     }
 
-    throw new Error("Invalid token, unauthorized");
+    // if error
+    res.status(401).json({
+      status: "error",
+      message: "Unauthorized access.",
+    });
   } catch (error) {
-    return buildErrorResponse(res, error.message || "Invalid token!");
+    next(error);
   }
 };
 
-// Refresh access token for client
-export const refreshAuth = async (req, res) => {
+// authenticate user using refresh jwt
+export const jwtAuth = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
+    let errorMessage = "";
 
-    // Validate and decode refresh token
+    // verfy access jwt
     const decoded = verifyRefreshJWT(authorization);
 
-    // Get the user based on email and generate a new access token
+    if (typeof decoded === "string") {
+      return next({
+        status: 401,
+        message: decoded, // "jwt expired" or "Invalid Token"
+      });
+    }
+
     if (decoded?.email) {
-      const user = await findUserByEmail(decoded.email);
+      // get user
+      const user = await getUser({ email: decoded.email });
 
       if (user?._id) {
-        // Generate a new access token and return it to the client
-        const accessJWT = await generateAccessJWT(user.email);
+        if (!user.isEmailVerified) {
+          return (errorMessage = "Account Not Verified.");
+        }
 
-        return buildSuccessResponse(res, accessJWT, "New Access Token");
+        user.__v = undefined;
+        user.refreshJWT = undefined;
+
+        req.userInfo = user;
+        return next();
       }
     }
 
-    throw new Error("Invalid token!");
+    // if error
+    res.json({
+      status: 401,
+      message: errorMessage
+        ? errorMessage
+        : "Invalid Token or unauthorized access.",
+    });
   } catch (error) {
-    return buildErrorResponse(res, error.message);
+    next(error);
   }
 };
