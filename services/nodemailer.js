@@ -26,20 +26,20 @@ export const emailVerificationMail = ({ email, firstName, uniqueKey }) => {
   const mailBody = {
     from: `"${process.env.SMTP_SENDER}" <${process.env.SMTP_EMAIL}>`,
     to: email, // list of receivers
-    subject: "Verify Your Account",
-    text: `Hello ${firstName},\n\nThank you for signing up! Please follow the link to verify your account:\n\n${url}\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Team`,
+    subject: "Welcome to LuxeDrive! Verify Your Account",
+    text: `Hello ${firstName},\n\nThank you for joining LuxeDrive’s community! Please follow the link to verify your account:\n\n${url}\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nLuxeDrive’s Team`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-          <h2 style="text-align: center; color: #4CAF50;">Welcome to Our Service, ${firstName}!</h2>
-          <p>Thank you for creating an account with us. To complete your registration, please click the button below to verify your email address:</p>
+          <h2 style="text-align: center; color: #4CAF50;">Welcome to LuxeDrive, ${firstName}!</h2>
+          <p>Thank you for joining our exclusive community of luxury car enthusiasts. Please click the button below to verify your email address and explore our collection of high-performance vehicles:</p>
           <div style="text-align: center; margin: 20px;">
             <a href="${url}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Now</a>
           </div>
           <p>If the button above doesn't work, please copy and paste the following link into your web browser:</p>
           <p style="word-wrap: break-word;"><a href="${url}" style="color: #4CAF50;">${url}</a></p>
           <p>If you did not sign up for an account, please ignore this email.</p>
-          <p>Best regards,<br/>Vikiasmy's</p>
+          <p>Best regards,<br/>The LuxeDrive Team</p>
         </div>
       </div>`,
   };
@@ -52,20 +52,19 @@ export const emailVerifiedNotification = ({ email, firstName }) => {
   const mailBody = {
     from: `"${process.env.SMTP_SENDER}" <${process.env.SMTP_EMAIL}>`,
     to: email, // list of receivers
-    subject: "Your Account is Now Verified! Log In to Start Shopping",
-    text: `Hello ${firstName},\n\nCongratulations! Your account has been successfully verified. You can now log in to purchase your favorite watches and accessories.\n\nBest regards,\nThe Team`,
+    subject:
+      "Your LuxeDrive Account is Verified! Welcome to the Exclusive Club",
+    text: `Hello ${firstName},\n\nCongratulations! Your LuxeDrive account has been successfully verified. You are now part of an exclusive community that values luxury and performance. Log in to discover your next high-performance vehicle.\n\nBest regards,\nThe LuxeDrive Team`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-          <h2 style="text-align: center; color: #4CAF50;">Congratulations, ${firstName}!</h2>
-          <p>Your account has been successfully verified.</p>
-          <p>You can now log in to explore and purchase your favorite watches and accessories from our collection.</p>
+          <h2 style="text-align: center; color: #4CAF50;">Welcome to LuxeDrive, ${firstName}!</h2>
+          <p>Your account has been successfully verified. You are now part of an exclusive club of luxury car enthusiasts.</p>
+          <p>Log in to explore our curated collection of luxury and high-performance vehicles that suit your refined taste.</p>
           <div style="text-align: center; margin: 20px;">
             <a href="${process.env.FRONTEND_ROOT}/login" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Log In Now</a>
           </div>
-          <p>If you have any questions or need assistance, please do not hesitate to contact our support team.</p>
-          <p>Happy Shopping!</p>
-          <p>Best regards,<br/>Vikiasmy's</p>
+          <p>Best regards,<br/>The LuxeDrive Team</p>
         </div>
       </div>`,
   };
@@ -73,24 +72,23 @@ export const emailVerifiedNotification = ({ email, firstName }) => {
   return emailProcessor(mailBody);
 };
 
-// OPT email
+// OTP Email
 export const sendOTPMail = ({ email, firstName, token }) => {
   const obj = {
     from: `"${process.env.SMTP_SENDER}" <${process.env.SMTP_EMAIL}>`,
     to: email,
-    subject: "Your One-Time Password (OTP) for Account Security",
-    text: `Hello ${firstName},\n\nYour One-Time Password (OTP) is: ${token}\n\nPlease use this OTP to complete your request. If you did not request this, please contact our support team immediately.\n\nBest regards,\nThe Team`,
+    subject: "Your Secure One-Time Password (OTP) from LuxeDrive",
+    text: `Hello ${firstName},\n\nYour LuxeDrive One-Time Password (OTP) is: ${token}\n\nPlease use this OTP to complete your request. If you did not request this, please contact our support team immediately.\n\nBest regards,\nLuxeDrive’s Team`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-          <h2 style="text-align: center; color: #4CAF50;">Hello ${firstName},</h2>
-          <p>We have received a request to reset your password. To proceed, please use the One-Time Password (OTP) provided below:</p>
+          <h2 style="text-align: center; color: #4CAF50;">Secure Your LuxeDrive Account</h2>
+          <p>Hello ${firstName}, we received a request for an OTP to secure your LuxeDrive account.</p>
           <div style="text-align: center; margin: 20px;">
             <p style="font-size: 24px; font-weight: bold; color: #333; border: 1px dashed #4CAF50; padding: 10px; display: inline-block;">${token}</p>
           </div>
-          <p>This OTP is valid for a limited time only. If you did not request a password reset, please contact our support team immediately to secure your account.</p>
-          <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
-          <p>Best regards,<br/>Vikiasmy's</p>
+          <p>If you did not request this, please contact our support team immediately.</p>
+          <p>Best regards,<br/>LuxeDrive’s Team</p>
         </div>
       </div>`,
   };
@@ -98,24 +96,22 @@ export const sendOTPMail = ({ email, firstName, token }) => {
   emailProcessor(obj);
 };
 
-// password update notification
+// Password Update Notification
 export const accountUpdateNotification = ({ email, firstName }) => {
   const obj = {
     from: `"${process.env.SMTP_SENDER}" <${process.env.SMTP_EMAIL}>`,
     to: email,
-    subject: "Your Password Has Been Successfully Updated",
-    text: `Hello ${firstName},\n\nWe wanted to let you know that your password has been successfully updated. If you did not make this change, please contact our support team immediately.\n\nBest regards,\nThe Team`,
+    subject: "Your LuxeDrive Password Has Been Updated Securely",
+    text: `Hello ${firstName},\n\nWe wanted to let you know that your password has been successfully updated. If you did not make this change, please contact our support team immediately.\n\nBest regards,\nThe LuxeDrive Team`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-          <h2 style="text-align: center; color: #4CAF50;">Hello ${firstName},</h2>
-          <p>We wanted to inform you that your password has been successfully updated.</p>
-          <p>If you made this change, no further action is required. If you did not request a password update, please contact our support team immediately to secure your account.</p>
+          <h2 style="text-align: center; color: #4CAF50;">Your Password Has Been Updated, ${firstName}</h2>
+          <p>We are committed to maintaining your security. If you did not authorize this change, please contact our support team.</p>
           <div style="text-align: center; margin: 20px;">
-            <a href="mailto:support@vikiasmy.com" style="background-color: #FF5722; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Contact Support</a>
+            <a href="mailto:support@luxedrive.com" style="background-color: #FF5722; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Contact Support</a>
           </div>
-          <p>For your security, please ensure that your account information is always up to date and keep your password confidential.</p>
-          <p>Best regards,<br/>Vikiasmy's</p>
+          <p>Best regards,<br/>The LuxeDrive Team</p>
         </div>
       </div>`,
   };
@@ -123,7 +119,7 @@ export const accountUpdateNotification = ({ email, firstName }) => {
   emailProcessor(obj);
 };
 
-// send email receipt
+// Email Receipt
 export const sendEmailReceipt = ({ email, firstName, orderDetails }) => {
   const {
     total,
@@ -136,29 +132,25 @@ export const sendEmailReceipt = ({ email, firstName, orderDetails }) => {
   const obj = {
     from: `"${process.env.SMTP_SENDER}" <${process.env.SMTP_EMAIL}>`,
     to: email,
-    subject: "Your Order Receipt from Vikiamy's",
+    subject: "Your LuxeDrive Order Receipt",
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-          <h2 style="text-align: center; color: #4CAF50;">Thank you for your purchase, ${firstName}!</h2>
-          <p>Your order is in the works. We sent you an email to ${email} with your order receipt.</p>
+          <h2 style="text-align: center; color: #4CAF50;">Thank You for Your Purchase, ${firstName}!</h2>
+          <p>Your luxury vehicle journey begins here. We have sent your order receipt to ${email}.</p>
           <h3>Order Summary</h3>
-          <p><strong>Total:</strong> ${total}</p>
-          <p><strong>Item:</strong> ${itemName}</p>
-          <p><strong>Quantity:</strong> ${quantity}</p>
-          <p><strong>Amount:</strong> ${amount}</p>
-          <h3>Estimated Arrival</h3>
-          <p>${estimatedArrival}</p>
-          <p>To ensure prompt delivery, some items may be shipped separately.</p>
-          <h3>Shipping To</h3>
+          <ul>
+            <li><strong>Item:</strong> ${itemName}</li>
+            <li><strong>Quantity:</strong> ${quantity}</li>
+            <li><strong>Total Amount:</strong> $${total}</li>
+          </ul>
+          <h3>Delivery Information</h3>
+          <p>Your order will be shipped to:</p>
           <p>${shippingAddress}</p>
-          <h3>Need Help?</h3>
-          <p>If you have any questions, contact us at <a href="mailto:support@vikiamy.com">support@vikiamy.com</a> or call (02) 9876 5432.</p>
-          <p>Need to return something? Print or show this email in-store to use as a receipt.</p>
-          <p>Thank you for shopping with us!<br>Vikiamy's</p>
+          <p>Estimated Arrival: ${estimatedArrival}</p>
+          <p>Best regards,<br/>The LuxeDrive Team</p>
         </div>
-      </div>
-    `,
+      </div>`,
   };
 
   emailProcessor(obj);

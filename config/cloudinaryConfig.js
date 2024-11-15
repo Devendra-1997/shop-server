@@ -12,7 +12,7 @@ cloudinary.v2.config({
 export const cloudinaryUpload = async (filePath) => {
   try {
     const result = await cloudinary.v2.uploader.upload(filePath, {
-      folder: "luxedrive/users",
+      folder: "vikiasmy-watches/users",
       allowed_formats: ["jpg", "png", "webp"],
     });
     fs.unlinkSync(filePath); //remove local file after successful cloudinary upload

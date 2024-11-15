@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import { connectToMongoDb } from "./config/dbConfig.js";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -15,9 +14,10 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use("/api/orders", orderRouter);
 
-// connect to database();
-connectToMongoDb();
+// connect to database;
 
+import { mongoConnect } from "./config/dbConfig.js";
+mongoConnect();
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
